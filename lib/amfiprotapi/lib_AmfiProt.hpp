@@ -16,7 +16,7 @@
 #ifdef _MSC_VER
 #define __PACKED_STRUCT struct 
 #define __weak  
-#define __packed 
+#define __PACKED 
 #pragma pack(1)
 #elif defined(__MINGW32__) ||  defined(__MINGW64__)
 #define __PACKED_STRUCT struct __attribute__((packed)) 

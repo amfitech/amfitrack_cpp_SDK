@@ -17,7 +17,7 @@
 
 
 #ifdef _MSC_VER
-#define __PACKED_STRUCT struct 
+#define __PACKED_STRUCT_GENERIC struct
 #define __weak  
 #define __packed
 #pragma pack(1)
@@ -26,9 +26,9 @@
 #define __weak  
 #define __packed __attribute__((packed))
 #else
-#define __PACKED_STRUCT struct
+#define __PACKED_STRUCT_GENERIC struct
 #define __weak
-#define __PACKED __attribute__((packed))
+#define __packed __attribute__((packed))
 #endif
 
 //-----------------------------------------------------------------------------
@@ -46,9 +46,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifndef __PACKED_STRUCT
-//#include <cmsis_compiler.h>
-#endif
 /// \endcond
 #endif	// __cplusplus
 
