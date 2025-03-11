@@ -109,4 +109,4 @@ Contributions are welcome! Please submit issues and pull requests on GitHub.
 
 ## Contact
 
-For discussions, questions, and community support, visit the [GitHub Discussions](https://github.com/amfitech/amfitrack_cpp_SDK/discussions) page.
+For discussions, questions, and support, visit the [GitHub Discussions](https://github.com/amfitech/amfitrack_cpp_SDK/discussions) page.
