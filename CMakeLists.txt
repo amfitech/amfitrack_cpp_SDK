@@ -61,16 +61,7 @@ add_subdirectory(${HIDAPI_PATH})
 
 # Include HIDAPI headers
 include_directories(${HIDAPI_PATH}/hidapi)
-
-# Select the correct HIDAPI backend for each OS
 target_link_libraries(${APP_NAME} PRIVATE hidapi::hidapi)
-#if(WIN32)
-#    target_link_libraries(${APP_NAME} PRIVATE hidapi::winapi)
-#elseif(APPLE)
-#    target_link_libraries(${APP_NAME} PRIVATE hidapi::darwin)
-#elseif(UNIX)
-#    target_link_libraries(${APP_NAME} PRIVATE hidapi::libusb)
-#endif()
 
 # Ensure HIDAPI is included in build
 target_include_directories(${APP_NAME} PRIVATE ${HIDAPI_PATH}/hidapi)
