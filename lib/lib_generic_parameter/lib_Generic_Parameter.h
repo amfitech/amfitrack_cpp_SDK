@@ -26,7 +26,7 @@
 #define __weak  
 #define __packed __attribute__((packed))
 #else
-#define __PACKED_STRUCT_GENERIC struct
+#define __PACKED_STRUCT_GENERIC struct __attribute__((packed))
 #define __weak
 #define __packed __attribute__((packed))
 #endif

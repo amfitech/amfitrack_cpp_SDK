@@ -23,7 +23,7 @@
 #define __weak  
 #define __PACKED __attribute__((packed)) 
 #else
-#define __PACKED_STRUCT struct
+#define __PACKED_STRUCT struct __attribute__((packed)) 
 #define __weak
 #define __PACKED __attribute__((packed))
 #endif

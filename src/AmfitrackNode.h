@@ -19,7 +19,7 @@
 #include <vector>
 #include <memory>
 
-#include "../lib/hidapi/hidapi.h"
+#include "lib/hidapi/hidapi/hidapi.h"
 #include "../lib/amfiprotapi/lib_AmfiProt.hpp"
 
 class AmfitrackNode

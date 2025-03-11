@@ -21,12 +21,7 @@
 #include <string.h>
 #include <vector>
 #include <memory>
-#ifdef USE_HID
-#include "../lib/hidapi/hidapi.h"
-//#include "hidapi.h"
-#else
-#include <lib/libusb-1.0/libusb.h>
-#endif
+#include "lib/hidapi/hidapi/hidapi.h"
 #include "AmfitrackNode.h"
 
 #ifdef __cplusplus
