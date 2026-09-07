@@ -26,7 +26,7 @@
 #include "lib_AmfiProt_Amfitrack.hpp"
 #include "lib_fifo.hpp"
 
-#include "time.h"
+#include <chrono>
 
 #ifdef USE_THREAD_BASED
 #include <iostream>
@@ -145,7 +145,8 @@ class AmfiProt_API : public lib_AmfiProt, public lib_AmfiProt_AmfiTrack
 
 	uint8_t _retransmitCount;
 	bool _lastPackageNumberError;
-	time_t _retransmitTimer;
+	// Use chrono for sub-second accuracy instead of time_t
+	std::chrono::steady_clock::time_point _retransmitTimer;
 };
 
 //-----------------------------------------------------------------------------

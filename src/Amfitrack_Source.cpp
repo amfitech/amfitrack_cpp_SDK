@@ -53,6 +53,8 @@ void AMFITRACK_Source::reset()
 	active = false;
 	hub_ID = 0;
 	_dev_handle = nullptr;
+	std::memset(&status, 0, sizeof(status));
+	std::memset(&imu, 0, sizeof(imu));
 	std::memset(&current, 0, sizeof(current));
 	std::memset(&frequency, 0, sizeof(frequency));
 	std::memset(&voltage, 0, sizeof(voltage));

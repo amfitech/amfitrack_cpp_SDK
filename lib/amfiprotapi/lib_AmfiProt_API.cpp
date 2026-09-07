@@ -36,6 +36,9 @@
 // Variables and constants
 //-----------------------------------------------------------------------------
 
+// Time in ms until transmit is counted as timed out
+static constexpr std::chrono::milliseconds kRetransmitTimeout{1000};
+
 //-----------------------------------------------------------------------------
 // Functions
 //-----------------------------------------------------------------------------
@@ -60,6 +63,8 @@ void AmfiProt_API::isRequestAckSet(bool removeFromQueue)
 	if (removeFromQueue)
 	{
 		outgoingBulk_FiFo.pop(amfiFrame);
+		this->isTransmitting = false;
+		this->_retransmitCount = 0;
 		return;
 	}
 
@@ -69,11 +74,13 @@ void AmfiProt_API::isRequestAckSet(bool removeFromQueue)
 	if (controlBits)
 	{
 		this->isTransmitting = true;
-		time(&_retransmitTimer);
+		_retransmitTimer = std::chrono::steady_clock::now();
 	}
 	else
 	{
+		// Set is transmitting to false since theres no ack later here
 		outgoingBulk_FiFo.pop(amfiFrame);
+		this->isTransmitting = false;
 		this->_retransmitCount = 0;
 	}
 }
@@ -91,16 +98,24 @@ void AmfiProt_API::process_incoming_queue(void)
 
 void AmfiProt_API::clear_isTransmitting(lib_AmfiProt_Frame_t *frame)
 {
-	if (frame->header.packetNumber == this->packetNumber[frame->header.source])
+	lib_AmfiProt_Frame_t *inFlight = outgoingBulk_FiFo.peek();
+
+	if (inFlight == nullptr)
 	{
-		if (!outgoingBulk_FiFo.isEmpty())
-		{
-			lib_AmfiProt_Frame_t frame;
-			outgoingBulk_FiFo.pop(frame);
-		}
-		this->_retransmitCount = 0;
-		this->isTransmitting = false;
+		return;
 	}
+
+	// The ack must come from the device this frame was addressed to.
+	if (inFlight->header.packetNumber != frame->header.packetNumber ||
+		inFlight->header.destination != frame->header.source)
+	{
+		return;
+	}
+
+	lib_AmfiProt_Frame_t acked;
+	outgoingBulk_FiFo.pop(acked);
+	this->_retransmitCount = 0;
+	this->isTransmitting = false;
 }
 
 bool AmfiProt_API::queue_frame(void const *payload, uint8_t length, uint8_t payloadType, lib_AmfiProt_packetType_t packetType, uint8_t destination)
@@ -172,11 +187,9 @@ void AmfiProt_API::set_transmit_ongoing_and_check_respons_request(bool removeFro
 void AmfiProt_API::amfiprot_run(void)
 {
 	this->process_incoming_queue();
-	static time_t current_timer;
-	time(&current_timer);
-	double diffTime = difftime(current_timer, _retransmitTimer);
 
-	if (this->isTransmitting && (diffTime >= 1.0))
+	if (this->isTransmitting &&
+		(std::chrono::steady_clock::now() - _retransmitTimer) >= kRetransmitTimeout)
 	{
 		this->_retransmitCount++;
 		if (this->_retransmitCount >= 3)

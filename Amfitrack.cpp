@@ -20,12 +20,13 @@
 #include "HID_Monitor.h"
 
 #include <atomic>
+#include <chrono>
 #include <memory>
 #include <utility>
 
 #ifdef USE_THREAD_BASED
-#include <mutex>
 #include <thread>
+#include <mutex>
 #endif
 
 //-----------------------------------------------------------------------------
@@ -70,6 +71,16 @@ void AMFITRACK::background_amfitrack_task(AMFITRACK *inst)
 	while (!stop_running.load(std::memory_order_acquire))
 	{
 		_run_all_amfitrack();
+
+		// Every sub-task above is non-blocking and internally rate-limited, so
+		// without a pause this loop busy-spins a whole core. Pending HID reports
+		// are drained in batches each pass, so a 1 ms pause adds no meaningful
+		// input latency; with no devices attached only the 1 Hz USB scan needs
+		// to run, so idle can sleep longer.
+		const bool devices_present =
+			AMFITRACK_Devices::getInstance().get_numer_of_sensors() > 0 ||
+			AMFITRACK_Devices::getInstance().get_numer_of_sources() > 0;
+		std::this_thread::sleep_for(std::chrono::milliseconds(devices_present ? 1 : 50));
 	}
 }
 

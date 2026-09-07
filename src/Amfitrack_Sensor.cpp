@@ -55,8 +55,13 @@ void AMFITRACK_Sensor::reset()
 	hub_ID = 0;
 	calcId = 0;
 	_dev_handle = nullptr;
+	std::memset(&status, 0, sizeof(status));
+	std::memset(&external_input, 0, sizeof(external_input));
 	std::memset(&pose, 0, sizeof(pose));
 	std::memset(&imu, 0, sizeof(imu));
+	std::memset(&rawBfield, 0, sizeof(rawBfield));
+	std::memset(&normBfield, 0, sizeof(normBfield));
+	std::memset(&rawWithPhaseBfield, 0, sizeof(rawWithPhaseBfield));
 #if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 	timestamp = std::chrono::steady_clock::time_point{};
 #endif

@@ -478,7 +478,9 @@ void HIDMonitor::drainTxQueue()
 	}
 	else
 	{
-		LOG_I("TxID %u not matched to any connected device", txId);
+		// No route to the device - drop it from the device list
+		LOG_W("TxID %u not reachable, dropping frame and marking device inactive", txId);
+		AMFITRACK_Devices::getInstance().set(txId, AMFITRACK_Devices::deviceType_t::Both, false);
 		_cb.txDone(true);
 	}
 
@@ -563,6 +565,21 @@ HIDMonitor::findHandleByTxId(uint8_t txId)
 				else if (hub_source._dev_handle)
 				{
 					hidHandle = hub_source._dev_handle;
+				}
+				else
+				{
+					// hub_ID is only learned from the sensor's own frames, so a sensor
+					// re-created by a payload handler has none yet
+					for (uint8_t j = 0; j < AMFITRACK_Devices::getInstance().get_numer_of_sources(); j++)
+					{
+						AMFITRACK_Source src;
+						AMFITRACK_Devices::getInstance().get_source_by_number(j, &src);
+						if (src._dev_handle)
+						{
+							hidHandle = src._dev_handle;
+							break;
+						}
+					}
 				}
 			}
 			else
